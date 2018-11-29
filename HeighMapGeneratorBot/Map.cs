@@ -23,6 +23,14 @@ namespace HeighMapGeneratorBot
             HeightMap = new byte[SizeX, SizeY];
         }
 
+        public Map(byte[,] heightMap, byte[,] colorMap, int sizeX, int sizeY)
+        {
+            SizeX = sizeX;
+            SizeY = sizeY;
+            HeightMap = heightMap;
+            ColorMap = colorMap;
+        }
+
         /// <summary>
         /// Инициализация краев карты заданными значениями
         /// </summary>
@@ -48,14 +56,28 @@ namespace HeighMapGeneratorBot
 
             var res = new List<T>();
 
-            for(int i = 0; i < len; i++)
+            for(int i = 0; i < weight; i++)
             {
-                for(int j = 0; j < weight; j++)
+                for(int j = 0; j < len; j++)
                 {
                     res.Add(arr[i, j]);
                 }
             }
             return res.ToArray();
+        }
+
+        public static T[,] ToMatrix<T>(this T[] arr, int sizeX, int sizeY)
+        {
+            var res = new T[sizeX, sizeY];
+
+            for(int i = 0; i < sizeY; i++)
+            {
+                for(int j = 0; j < sizeX; j++)
+                {
+                    res[i, j] = arr[sizeX * i + j];
+                }
+            }
+            return res;
         }
     }
 }

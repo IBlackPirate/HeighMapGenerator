@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing;
 
 namespace HeighMapGeneratorBot
 {
@@ -18,7 +19,10 @@ namespace HeighMapGeneratorBot
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                var queryString = $"UPDATE heightMap, colorMap VALUES({(object)map.heightMap.ToArray()}, {(object)map.heightMap.ToArray()})";
+                var queryString = $"UPDATE Map" +
+                    $"SET heightMap={(object)map.HeightMap.ToArray()}, colorMap = {(object)map.ColorMap.ToArray()}" +
+                    $"sizeX={map.SizeX}, sizeY={map.SizeY}" +
+                    $"WHERE idUser={personId}";
                 SqlCommand command = new SqlCommand(queryString, connection);
                 connection.Open();
                 var reader = command.ExecuteNonQuery();
@@ -27,22 +31,30 @@ namespace HeighMapGeneratorBot
 
         public static Map GetMap(long personId)
         {
+            byte[] heightMap = null;
+            byte[] colorMap = null;
+            int sizeX = 0;
+            int sizeY = 0;
+
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                var queryString = "SELECT ";
+                var queryString = $"SELECT heightMap, colorMap, sizeX, sizeY" +
+                    $"FROM Map " +
+                    $"WHERE idUser={personId}";
                 SqlCommand command = new SqlCommand(queryString, connection);
                 connection.Open();
                 var reader = command.ExecuteReader();
 
                 if (reader.HasRows)
                 {
-
+                    heightMap = (byte[])reader.GetValue(1);
+                    colorMap = (byte[])reader.GetValue(2);
+                    sizeX = (int)reader.GetValue(3);
+                    sizeY = (int)reader.GetValue(4);
                 }
             }
-            return new Map();
+            return new Map(heightMap.ToMatrix(sizeX, sizeY), colorMap.ToMatrix(sizeX, sizeY), sizeX, sizeY);
         }
-
-        
     }
 }
 
