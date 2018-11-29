@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace HeighMapGeneratorBot
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                var queryString = "UPDATE ";
+                var queryString = $"UPDATE heightMap, colorMap VALUES({map.heightMap})";
                 SqlCommand command = new SqlCommand(queryString, connection);
                 connection.Open();
                 var reader = command.ExecuteNonQuery();
@@ -40,6 +41,8 @@ namespace HeighMapGeneratorBot
             }
             return new Map();
         }
+
+        
     }
 }
 
