@@ -16,12 +16,12 @@ namespace HeighMapGeneratorBot
 
     public static class Extentions
     {
-        public static byte[] ToArray(this byte[,] arr)
+        public static T[] ToArray<T>(this T[,] arr)
         {
             var len = arr.GetLength(0);
             var weight = arr.GetLength(1);
 
-            var res = new List<byte>();
+            var res = new List<T>();
 
             for(int i = 0; i < len; i++)
             {
