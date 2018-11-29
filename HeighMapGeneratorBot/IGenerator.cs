@@ -8,10 +8,6 @@ namespace HeighMapGeneratorBot
 {
     public interface IGenerator
     {
-        /// <summary>
-        /// Вызывает процесс генерации карты
-        /// </summary>
-        /// <returns>Массив с высотами каждого пикселя</returns>
-        float[,] GenerateMap();
+        Map GenerateMap();
     }
 }

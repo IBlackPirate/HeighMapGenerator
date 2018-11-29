@@ -9,51 +9,24 @@ namespace HeighMapGeneratorBot
     class DiamondSquareGenerator : IGenerator
     {
         // Шерховатость
-        public readonly float Roughness;
-        // Ширина карты
-        public readonly int SizeX;
-        // Высота карты
-        public readonly int SizeY;
+        public readonly int Roughness;
 
         private readonly Random random;
-        private float[,] map;
+        private Map map;
 
         /// <summary>
         /// Инициализация генератора
         /// </summary>
-        /// <param name="sizeX">Ширина карты</param>
-        /// <param name="sizeY">Высота карты</param>
-        /// <param name="roughness">Шерховатость</param>
-        /// <param name="seed">Параметр, влияющай на выбор случайных чисел</param>
-        /// <param name="leftTop">Высота левого верхнего края</param>
-        /// <param name="leftBottom">Высота левого нижнего края</param>
-        /// <param name="rightTop">Высота правого верхнего края</param>
-        /// <param name="rightBottom">Высота правого нижнего края</param>
-        public DiamondSquareGenerator(int sizeX, int sizeY, float roughness, int seed,
-            float leftTop, float leftBottom, float rightTop, float rightBottom)
+        public DiamondSquareGenerator(int roughness, int seed, Map map,
+            byte leftTop, byte leftBottom, byte rightTop, byte rightBottom)
         {
-            SizeX = sizeX;
-            SizeY = sizeY;
             Roughness = roughness;
             random = new Random(seed);
-            InitializeMap(leftTop, leftBottom, rightTop, rightBottom);
+            this.map = map;
+            this.map.InitializeMapWithValue(leftTop, leftBottom, rightTop, rightBottom);
         }
 
-        // Служит для инициализации карты начальными значениями
-        private void InitializeMap(float leftTop, float leftBottom, float rightTop, float rightBottom)
-        {
-            map = new float[SizeX, SizeY];
-            map[0, 0] = leftTop;
-            map[0, SizeY - 1] = leftBottom;
-            map[SizeX - 1, 0] = rightTop;
-            map[SizeX - 1, SizeY - 1] = rightBottom;
-        }
-
-        /// <summary>
-        /// Генерирует карту, используя алгоритм DiamondSquare
-        /// </summary>
-        /// <returns>Массив с высотами каждого пикселя</returns>
-        public float[,] GenerateMap()
+        public Map GenerateMap()
         {
             throw new NotImplementedException();
         }
@@ -62,9 +35,18 @@ namespace HeighMapGeneratorBot
         /// Шаг 'Square' в алгоритме
         /// Нахождение высоты средней точки
         /// </summary>
-        private void Square(float leftX, float leftY, float rightX, float rightY)
+        private void Square(int leftX, int topY, int rightX, int bottomY)
         {
-            
+            var leftTop = map.HeightMap[leftX, topY];
+            var leftBottom = map.HeightMap[leftX, bottomY];
+            var rightTop = map.HeightMap[rightX, topY];
+            var rightBottom = map.HeightMap[rightX, bottomY];
+            var sum = leftTop + leftBottom + rightTop + rightBottom;
+
+            var centerX = leftX + (rightX - leftX) / 2;
+            var centerY = bottomY + (topY - bottomY) / 2;
+
+            map.HeightMap[centerX, centerY] = (byte)(sum / 4 + random.Next(-Roughness, Roughness));
         }
 
 
