@@ -11,7 +11,7 @@ namespace HeighMapGeneratorBot
 {
     public static class DataBaseReaderWriter
     {
-        private static string connectionString = "Data Source=(local);Initial Catalog=Maps;"
+        private static readonly string connectionString = "Data Source=(local);Initial Catalog=Maps;"
                 + "Integrated Security=true";
 
 

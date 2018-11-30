@@ -47,6 +47,7 @@
     <Compile Include="DataBaseReaderWriter.cs" />
     <Compile Include="DiamondSquareGenerator.cs" />
     <Compile Include="IGenerator.cs" />
+    <Compile Include="Image.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
