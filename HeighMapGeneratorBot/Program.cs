@@ -12,36 +12,15 @@ namespace HeighMapGeneratorBot
     {
         static void Main(string[] args)
         {
+            var map = new Map(1025);
+            var generator = new DiamondSquareGenerator(30, new Random().Next(), map, 0, 0, 50, 200);
 
-            var c = new Bitmap(40, 40);
-
-            for(int i = 0; i < 40; i++)
-            {
-                for(int j = 0; j < 40; j++)
-                {
-                    if (i < 20 && j < 20)
-                    {
-                        c.SetPixel(i, j, System.Drawing.Color.Black);
-                    }
-                    if (i < 20 && j >= 20)
-                    {
-                        c.SetPixel(i, j, System.Drawing.Color.Red);
-                    }
-                    if (i >= 20 && j < 20)
-                    {
-                        c.SetPixel(i, j, System.Drawing.Color.Blue);
-                    }
-                    else
-                    {
-                        c.SetPixel(i, j, System.Drawing.Color.White);
-                    }
-
-                }
-            }
-
-
-
+            var c = generator.GenerateMap().ToHeightBitmap();
             c.Save(@"C:\result_new.png", System.Drawing.Imaging.ImageFormat.Png);
+
+            map.Realize();
+            c = generator.GenerateMap().ToHeightBitmap();
+            c.Save(@"C:\result_new_real.png", System.Drawing.Imaging.ImageFormat.Png);
 
             byte[] imageData = null;
             FileInfo fInfo = new FileInfo(@"C:\result_new.png");

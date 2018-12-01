@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,27 +9,40 @@ namespace HeighMapGeneratorBot
 {
     public class Map
     {
-        // Ширина карты
-        public readonly int SizeX;
-        // Высота карты
-        public readonly int SizeY;
+        // Ширина и высота карты
+        public readonly int Size;
 
         public readonly byte[,] HeightMap;
-        public readonly byte[,] ColorMap;
 
-        public Map(int sizeX, int sizeY)
+        ////////////////////////////////
+        public readonly byte[,] ColorMap;
+        public int SizeX, SizeY;
+        ////////////////////////////////
+
+        public Map(int size)
         {
-            SizeX = sizeX;
-            SizeY = sizeY;
-            HeightMap = new byte[SizeX, SizeY];
+            Size = size;
+            HeightMap = new byte[Size, Size];
         }
 
-        public Map(byte[,] heightMap, byte[,] colorMap, int sizeX, int sizeY)
+        public Map(byte[,] heightMap, byte[,] colorMap, int size, int deleteMe = 0)
         {
-            SizeX = sizeX;
-            SizeY = sizeY;
+            Size = size;
             HeightMap = heightMap;
             ColorMap = colorMap;
+        }
+
+        public void Realize()
+        {
+            for(int x = 0; x < Size; x++)
+            {
+                for (int y = 0; y < Size; y++)
+                {
+                    var d = HeightMap[x, y] / 255d;
+                    d *= d;
+                    HeightMap[x, y] = (byte)(d * 255 * 255);
+                }
+            }
         }
 
         /// <summary>
@@ -41,9 +55,23 @@ namespace HeighMapGeneratorBot
         public void InitializeMapWithValue(byte leftTop, byte leftBottom, byte rightTop, byte rightBottom)
         {
             HeightMap[0, 0] = leftTop;
-            HeightMap[0, SizeY - 1] = leftBottom;
-            HeightMap[SizeX - 1, 0] = rightTop;
-            HeightMap[SizeX - 1, SizeY - 1] = rightBottom;
+            HeightMap[0, Size - 1] = leftBottom;
+            HeightMap[Size - 1, 0] = rightTop;
+            HeightMap[Size - 1, Size - 1] = rightBottom;
+        }
+
+        public Bitmap ToHeightBitmap()
+        {
+            Bitmap image = new Bitmap(Size, Size);
+            for (int x = 0; x < Size; x++)
+            {
+                for (int y = 0; y < Size; y++)
+                {
+                    var color = HeightMap[x, y];
+                    image.SetPixel(x, y, Color.FromArgb(color, color, color));
+                }
+            }
+            return image;
         }
     }
 
@@ -56,9 +84,9 @@ namespace HeighMapGeneratorBot
 
             var res = new List<T>();
 
-            for(int i = 0; i < weight; i++)
+            for (int i = 0; i < weight; i++)
             {
-                for(int j = 0; j < len; j++)
+                for (int j = 0; j < len; j++)
                 {
                     res.Add(arr[i, j]);
                 }
@@ -70,9 +98,9 @@ namespace HeighMapGeneratorBot
         {
             var res = new T[sizeX, sizeY];
 
-            for(int i = 0; i < sizeY; i++)
+            for (int i = 0; i < sizeY; i++)
             {
-                for(int j = 0; j < sizeX; j++)
+                for (int j = 0; j < sizeX; j++)
                 {
                     res[i, j] = arr[sizeX * i + j];
                 }
