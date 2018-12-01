@@ -44,6 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Biome.cs" />
+    <Compile Include="ColorMapGenerator.cs" />
     <Compile Include="DataBaseReaderWriter.cs" />
     <Compile Include="DiamondSquareGenerator.cs" />
     <Compile Include="IGenerator.cs" />
