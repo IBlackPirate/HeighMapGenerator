@@ -28,30 +28,38 @@ namespace HeighMapGeneratorBot
 
         public Map GenerateMap()
         {
-            for (int len = (map.Size - 1) / 2; len > 0; len /= 2)
+            int len = map.Size - map.Size % 2;
+            while (len > 1)
             {
-                for (int x = 0; x < map.Size - 1; x += len)
-                {
-                    for (int y = 0; y < map.Size - 1; y += len)
-                        DiamondSquare(x, y, x + len, y + len);
-                }
+                PreformSquare(len);
+                PerformDiamond(len);
+                len /= 2;
             }
             return map;
         }
 
-        private void DiamondSquare(int leftX, int bottomY, int rightX, int topY)
+        private void PerformDiamond(int len)
         {
-            int length = (rightX - leftX) / 2;
-
-            SquareStep(leftX, topY, rightX, bottomY);
-
-            Diamond(leftX, topY - length, length);
-            Diamond(rightX, bottomY + length, length);
-            Diamond(rightX - length, bottomY, length);
-            Diamond(leftX + length, topY, length);
+            for (int x = 0; x < map.Size - 1; x += len)
+            {
+                for (int y = 0; y < map.Size - 1; y += len)
+                {
+                    DiamondStep(x, y + len / 2, len / 2);
+                    DiamondStep(x + len / 2, y, len / 2);
+                    DiamondStep(x + len, y + len / 2, len / 2);
+                    DiamondStep(x + len / 2, y + len, len / 2);
+                }
+            }
         }
 
-        private void SquareStep(int leftX, int topY, int rightX, int bottomY)
+        private void PreformSquare(int len)
+        {
+            for (int x = 0; x < map.Size - 1; x += len)
+                for (int y = 0; y < map.Size - 1; y += len)
+                    SquareStep(x, y, x + len, y + len);
+        }
+
+        private void SquareStep(int leftX, int bottomY, int rightX, int topY)
         {
             var leftTop = map.HeightMap[leftX, topY];
             var leftBottom = map.HeightMap[leftX, bottomY];
@@ -63,13 +71,10 @@ namespace HeighMapGeneratorBot
             var centerX = leftX + length;
             var centerY = bottomY + length;
 
-            var result = sum / 4 + random.Next(-Roughness, Roughness);
-            //map.HeightMap[centerX, centerY] = (byte)(sum / 4);
-            map.HeightMap[centerX, centerY] = (byte)(result > 0 ? result : 0);
-            //Console.WriteLine(sum / 4 + random.Next(-Roughness, Roughness));
+            SetHeight(sum, length, centerX, centerY);
         }
 
-        public void Diamond(int centerX, int centerY, int length)
+        public void DiamondStep(int centerX, int centerY, int length)
         {
             byte left = (byte)(random.Next() % 150);
             byte right = (byte)(random.Next() % 150);
@@ -86,11 +91,13 @@ namespace HeighMapGeneratorBot
                 top = map.HeightMap[centerX, centerY + length];
 
             var sum = left + right + top + bottom;
-            var result = sum / 4 + random.Next(-Roughness, Roughness);
-            //map.HeightMap[centerX, centerY] = (byte)(sum / 4);
-            //map.HeightMap[centerX, centerY] = (byte)Math.Abs(sum / 4 + random.Next(-Roughness, Roughness));
-            map.HeightMap[centerX, centerY] = (byte)(result > 0 ? result : 0);
-            //Console.WriteLine(sum / 4 + random.Next(-Roughness, Roughness));
+            SetHeight(sum, length, centerX, centerY);
+        }
+
+        private void SetHeight(int sum, int length, int posX, int posY)
+        {
+            var result = sum / 4 + random.Next(-Roughness * length, Roughness * length);
+            map.HeightMap[posX, posY] = (byte)(result > 0 ? result % 255 : 0);
         }
     }
 }

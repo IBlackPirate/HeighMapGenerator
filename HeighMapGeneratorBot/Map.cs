@@ -40,7 +40,7 @@ namespace HeighMapGeneratorBot
                 {
                     var d = HeightMap[x, y] / 255d;
                     d *= d;
-                    HeightMap[x, y] = (byte)(d * 255 * 255);
+                    HeightMap[x, y] = (byte)(d * 255);
                 }
             }
         }
