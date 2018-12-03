@@ -13,17 +13,26 @@ namespace HeighMapGeneratorBot
 
         private readonly Random random;
         private Map map;
+        private bool isRandomBorder;
+        private byte defaultBorderValue;
 
         /// <summary>
         /// Инициализация генератора
         /// </summary>
-        public DiamondSquareGenerator(int roughness, int seed, Map map,
-            byte leftTop, byte leftBottom, byte rightTop, byte rightBottom)
+        public DiamondSquareGenerator(int roughness, int seed, Map map, bool isRandomBorder, 
+            byte defaultBorderValue, byte leftTop, byte leftBottom, byte rightTop, byte rightBottom) 
+                    : this(roughness, seed, map, isRandomBorder, defaultBorderValue = 0)
+        {
+            this.map.InitializeMapWithValue(leftTop, leftBottom, rightTop, rightBottom);
+        }
+
+        public DiamondSquareGenerator(int roughness, int seed, Map map, bool isRandomBorder, byte defaultBorderValue = 0)
         {
             Roughness = roughness;
             random = new Random(seed);
             this.map = map;
-            this.map.InitializeMapWithValue(leftTop, leftBottom, rightTop, rightBottom);
+            this.isRandomBorder = isRandomBorder;
+            this.defaultBorderValue = defaultBorderValue;
         }
 
         public Map GenerateMap()
@@ -74,12 +83,19 @@ namespace HeighMapGeneratorBot
             SetHeight(sum, length, centerX, centerY);
         }
 
+        private byte GetBorderValue()
+        {
+            if (isRandomBorder)
+                return (byte)(random.Next() % 255);
+            return defaultBorderValue;
+        }
+
         public void DiamondStep(int centerX, int centerY, int length)
         {
-            byte left = (byte)(random.Next() % 150);
-            byte right = (byte)(random.Next() % 150);
-            byte top = (byte)(random.Next() % 150);
-            byte bottom = (byte)(random.Next() % 150);
+            byte left = GetBorderValue();
+            byte right = GetBorderValue();
+            byte top = GetBorderValue();
+            byte bottom = GetBorderValue();
 
             if (centerX - length >= 0)
                 left = map.HeightMap[centerX - length, centerY];

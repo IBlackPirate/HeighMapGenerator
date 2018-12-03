@@ -13,7 +13,7 @@ namespace HeighMapGeneratorBot
         static void Main(string[] args)
         {
             var map = new Map(1025);
-            var generator = new DiamondSquareGenerator(2, new Random().Next(), map, 30 , 0, 10, 135);
+            var generator = new DiamondSquareGenerator(2, new Random().Next(), map, true);
 
             var c = generator.GenerateMap().ToHeightBitmap();
             var r = ColorMapGenerator.Generate(1, map.HeightMap, map.Size);
