@@ -103,7 +103,7 @@ namespace HeighMapGeneratorBot
                 right = map.HeightMap[centerX + length, centerY];
             if (centerY - length >= 0)
                 bottom = map.HeightMap[centerX, centerY - length];
-            if (centerY + length < map.SizeY)
+            if (centerY + length < map.Size)
                 top = map.HeightMap[centerX, centerY + length];
 
             var sum = left + right + top + bottom;
