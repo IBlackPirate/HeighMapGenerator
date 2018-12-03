@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace HeighMapGeneratorBot
 {
-    public interface IGenerator
+    interface IGenerator
     {
         Map GenerateMap();
     }

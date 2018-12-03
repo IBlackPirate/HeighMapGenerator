@@ -10,9 +10,9 @@ namespace HeighMapGeneratorBot
     class Biome
     {
         public readonly string Name;
-        public readonly Dictionary<byte, Func<byte, Color>> HeightToColor;
+        public readonly Dictionary<byte, Func<byte, Pixel>> HeightToColor;
 
-        public Biome(string name, Dictionary<byte, Func<byte, Color>> heightToColor)
+        public Biome(string name, Dictionary<byte, Func<byte, Pixel>> heightToColor)
         {
             Name = name;
             HeightToColor = heightToColor;

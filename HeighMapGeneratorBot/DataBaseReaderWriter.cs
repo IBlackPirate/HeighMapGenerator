@@ -9,7 +9,7 @@ using System.Drawing;
 
 namespace HeighMapGeneratorBot
 {
-    public static class DataBaseReaderWriter
+    static class DataBaseReaderWriter
     {
         private static readonly string connectionString = "Data Source=(local);Initial Catalog=Maps;"
                 + "Integrated Security=true";
@@ -21,7 +21,7 @@ namespace HeighMapGeneratorBot
             {
                 var queryString = $"UPDATE Map" +
                     $"SET heightMap={(object)map.HeightMap.ToArray()}, colorMap = {(object)map.ColorMap.ToArray()}" +
-                    $"sizeX={map.SizeX}, sizeY={map.SizeY}" +
+                    $"size={map.SizeX}, sizeY={map.SizeY}" +
                     $"WHERE idUser={personId}";
                 SqlCommand command = new SqlCommand(queryString, connection);
                 connection.Open();
@@ -53,7 +53,7 @@ namespace HeighMapGeneratorBot
                     sizeY = (int)reader.GetValue(4);
                 }
             }
-            return new Map(heightMap.ToMatrix(sizeX, sizeY), colorMap.ToMatrix(sizeX, sizeY), sizeX, sizeY);
+            return new Map(heightMap.ToMatrix(sizeX, sizeY), colorMap.ToPixels(sizeX, sizeY).ToMatrix(sizeX, sizeY), sizeX, sizeY);
         }
     }
 }

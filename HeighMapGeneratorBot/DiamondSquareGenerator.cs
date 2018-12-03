@@ -37,7 +37,7 @@ namespace HeighMapGeneratorBot
 
         public Map GenerateMap()
         {
-            int len = map.Size - map.Size % 2;
+            int len = map.SizeX - map.SizeX % 2;
             while (len > 1)
             {
                 PreformSquare(len);
@@ -49,9 +49,9 @@ namespace HeighMapGeneratorBot
 
         private void PerformDiamond(int len)
         {
-            for (int x = 0; x < map.Size - 1; x += len)
+            for (int x = 0; x < map.SizeX - 1; x += len)
             {
-                for (int y = 0; y < map.Size - 1; y += len)
+                for (int y = 0; y < map.SizeX - 1; y += len)
                 {
                     DiamondStep(x, y + len / 2, len / 2);
                     DiamondStep(x + len / 2, y, len / 2);
@@ -63,8 +63,8 @@ namespace HeighMapGeneratorBot
 
         private void PreformSquare(int len)
         {
-            for (int x = 0; x < map.Size - 1; x += len)
-                for (int y = 0; y < map.Size - 1; y += len)
+            for (int x = 0; x < map.SizeX - 1; x += len)
+                for (int y = 0; y < map.SizeX - 1; y += len)
                     SquareStep(x, y, x + len, y + len);
         }
 
@@ -99,11 +99,11 @@ namespace HeighMapGeneratorBot
 
             if (centerX - length >= 0)
                 left = map.HeightMap[centerX - length, centerY];
-            if (centerX + length < map.Size)
+            if (centerX + length < map.SizeX)
                 right = map.HeightMap[centerX + length, centerY];
             if (centerY - length >= 0)
                 bottom = map.HeightMap[centerX, centerY - length];
-            if (centerY + length < map.Size)
+            if (centerY + length < map.SizeX)
                 top = map.HeightMap[centerX, centerY + length];
 
             var sum = left + right + top + bottom;

@@ -7,36 +7,33 @@ using System.Threading.Tasks;
 
 namespace HeighMapGeneratorBot
 {
-    public class Map
+    class Map
     {
-        // Ширина и высота карты
-        public readonly int Size;
 
         public readonly byte[,] HeightMap;
-
-        ////////////////////////////////
-        public readonly byte[,] ColorMap;
+        public readonly Pixel[,] ColorMap;
         public int SizeX, SizeY;
-        ////////////////////////////////
 
-        public Map(int size)
+        public Map(int sizeX, int sizeY)
         {
-            Size = size;
-            HeightMap = new byte[Size, Size];
+            SizeX = sizeX;
+            SizeY = sizeY;
+            HeightMap = new byte[SizeX, SizeY];
         }
 
-        public Map(byte[,] heightMap, byte[,] colorMap, int size, int deleteMe = 0)
+        public Map(byte[,] heightMap, Pixel[,] colorMap, int sizeX, int sizeY)
         {
-            Size = size;
+            SizeX = sizeX;
+            SizeY = sizeY;
             HeightMap = heightMap;
             ColorMap = colorMap;
         }
 
         public void Realize()
         {
-            for(int x = 0; x < Size; x++)
+            for(int x = 0; x < SizeX; x++)
             {
-                for (int y = 0; y < Size; y++)
+                for (int y = 0; y < SizeY; y++)
                 {
                     var d = HeightMap[x, y] / 255d;
                     d *= d;
@@ -55,17 +52,17 @@ namespace HeighMapGeneratorBot
         public void InitializeMapWithValue(byte leftTop, byte leftBottom, byte rightTop, byte rightBottom)
         {
             HeightMap[0, 0] = leftTop;
-            HeightMap[0, Size - 1] = leftBottom;
-            HeightMap[Size - 1, 0] = rightTop;
-            HeightMap[Size - 1, Size - 1] = rightBottom;
+            HeightMap[0, SizeY - 1] = leftBottom;
+            HeightMap[SizeX - 1, 0] = rightTop;
+            HeightMap[SizeX - 1, SizeY - 1] = rightBottom;
         }
 
         public Bitmap ToHeightBitmap()
         {
-            Bitmap image = new Bitmap(Size, Size);
-            for (int x = 0; x < Size; x++)
+            Bitmap image = new Bitmap(SizeX, SizeY);
+            for (int x = 0; x < SizeX; x++)
             {
-                for (int y = 0; y < Size; y++)
+                for (int y = 0; y < SizeY; y++)
                 {
                     var color = HeightMap[x, y];
                     image.SetPixel(x, y, Color.FromArgb(color, color, color));
