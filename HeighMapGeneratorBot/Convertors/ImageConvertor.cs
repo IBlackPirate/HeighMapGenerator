@@ -10,11 +10,18 @@ namespace HeighMapGeneratorBot
 {
     static class ImageConvertor
     {
-        public static Bitmap ToHeighImage(this byte[] imageData)
+        public static Bitmap ToHeightImage(this Map map)
         {
-            MemoryStream ms = new MemoryStream(imageData);
-            var result = new Bitmap(Image.FromStream(ms));
-            return result;
+            Bitmap image = new Bitmap(map.SizeX, map.SizeY);
+            for (int x = 0; x < map.SizeX; x++)
+            {
+                for (int y = 0; y < map.SizeY; y++)
+                {
+                    var color = map.HeightMap[x, y];
+                    image.SetPixel(x, y, Color.FromArgb(color, color, color));
+                }
+            }
+            return image;
         }
 
         public static Bitmap ToColorImage(this Pixel[,] pixels, int sizeX, int sizeY)
