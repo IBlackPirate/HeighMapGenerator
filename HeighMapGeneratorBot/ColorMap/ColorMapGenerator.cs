@@ -10,7 +10,7 @@ namespace HeighMapGeneratorBot
     static class ColorMapGenerator
     {
         public static readonly List<Biome> Biomes=InicializeBiomes();
-        public static Bitmap Generate(this Map map, int biomeType, int smoothIntensivity)
+        public static Bitmap Generate(this Map map, int biomeType, int smoothIntensivity = 0)
         {
             var currentBiome = Biomes[biomeType].HeightToColor;
             var result = new Pixel[map.SizeX, map.SizeY];

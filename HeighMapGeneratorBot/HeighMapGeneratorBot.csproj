@@ -163,17 +163,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Biome.cs" />
-    <Compile Include="ColorMapGenerator.cs" />
-    <Compile Include="DataBaseReaderWriter.cs" />
-    <Compile Include="DiamondSquareGenerator.cs" />
+    <Compile Include="Convertors\ArrayConvertor.cs" />
+    <Compile Include="ColorMap\Biome.cs" />
+    <Compile Include="ColorMap\ColorMapGenerator.cs" />
+    <Compile Include="DataBase\DataBaseReaderWriter.cs" />
+    <Compile Include="Algorithms\DiamondSquareGenerator.cs" />
     <Compile Include="IGenerator.cs" />
-    <Compile Include="Image.cs" />
+    <Compile Include="Convertors\ImageConvertor.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="Pixel.cs" />
+    <Compile Include="Convertors\PixelConvertor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TgBot.cs" />
+    <Compile Include="Bot\TgBot.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

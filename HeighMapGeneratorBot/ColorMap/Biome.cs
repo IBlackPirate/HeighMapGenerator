@@ -7,14 +7,20 @@ using System.Drawing;
 
 namespace HeighMapGeneratorBot
 {
+    public enum BiomeType
+    {
+        Пустыня,
+        Лес
+    }
+
     class Biome
     {
-        public readonly string Name;
+        public readonly BiomeType Type;
         public readonly Dictionary<byte, Func<byte, Pixel>> HeightToColor;
 
-        public Biome(string name, Dictionary<byte, Func<byte, Pixel>> heightToColor)
+        public Biome(BiomeType type, Dictionary<byte, Func<byte, Pixel>> heightToColor)
         {
-            Name = name;
+            Type = type;
             HeightToColor = heightToColor;
         }
     }

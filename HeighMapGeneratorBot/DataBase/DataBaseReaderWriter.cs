@@ -20,7 +20,7 @@ namespace HeighMapGeneratorBot
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 var queryString = $"UPDATE Map" +
-                    $"SET heightMap={(object)map.HeightMap.ToArray()}, colorMap = {(object)map.ColorMap.ToArray()}" +
+                    $"SET heightMap={(object)map.HeightMap.ToArray()}, colorMap = {(object)map.ColorMap.ToArray().ToByte(map.SizeX, map.SizeY)}" +
                     $"size={map.SizeX}, sizeY={map.SizeY}" +
                     $"WHERE idUser={personId}";
                 SqlCommand command = new SqlCommand(queryString, connection);
