@@ -49,10 +49,28 @@ namespace HeighMapGeneratorBot
             rkm.Keyboard =
                 new KeyboardButton[][]
                 {
-                    new[] { new KeyboardButton("Вывести все имена") },
-                    new[] { new KeyboardButton("Начать сначала") },
-                    new[] { new KeyboardButton("Удалить запись") },
-                    new[] { new KeyboardButton("IP") }
+                    new[] { new KeyboardButton("Создать новую карту") },
+                    new[] { new KeyboardButton("Вывести предыдущую созданную") },
+                };
+            return rkm;
+        }
+
+        static bool TryGetSquareMapSize(out int size)
+        {
+            if (int.TryParse(message.Message.Text, out size))
+                if (size > 0 && ((size - 1) & (size - 2)) == 0) //Определяем, соответствует ли число 2^n - 1
+                    return true;
+            return false;
+        }
+
+        static ReplyKeyboardMarkup CreateMap(int size)
+        {
+            var rkm = new ReplyKeyboardMarkup();
+            rkm.Keyboard =
+                new KeyboardButton[][]
+                {
+                    new[] { new KeyboardButton("Создать новую карту") },
+                    new[] { new KeyboardButton("Вывести предыдущую созданную") },
                 };
             return rkm;
         }

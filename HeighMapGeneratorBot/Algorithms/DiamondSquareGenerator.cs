@@ -9,7 +9,7 @@ namespace HeighMapGeneratorBot
     class DiamondSquareGenerator : IGenerator
     {
         // Шерховатость
-        public readonly int Roughness;
+        public readonly double Roughness;
 
         private readonly Random random;
         private Map map;
@@ -19,14 +19,14 @@ namespace HeighMapGeneratorBot
         /// <summary>
         /// Инициализация генератора
         /// </summary>
-        public DiamondSquareGenerator(int roughness, int seed, Map map, bool isRandomBorder, 
-            byte defaultBorderValue, byte leftTop, byte leftBottom, byte rightTop, byte rightBottom) 
+        public DiamondSquareGenerator(double roughness, int seed, Map map, bool isRandomBorder,
+            byte defaultBorderValue, byte leftTop, byte leftBottom, byte rightTop, byte rightBottom)
                     : this(roughness, seed, map, isRandomBorder, defaultBorderValue = 0)
         {
-            this.map.InitializeMapWithValue(leftTop, leftBottom, rightTop, rightBottom);
+            this.map.SetCornerHeight(leftTop, leftBottom, rightTop, rightBottom);
         }
 
-        public DiamondSquareGenerator(int roughness, int seed, Map map, bool isRandomBorder, byte defaultBorderValue = 0)
+        public DiamondSquareGenerator(double roughness, int seed, Map map, bool isRandomBorder, byte defaultBorderValue = 0)
         {
             Roughness = roughness;
             random = new Random(seed);
@@ -112,8 +112,8 @@ namespace HeighMapGeneratorBot
 
         private void SetHeight(int sum, int length, int posX, int posY)
         {
-            var result = sum / 4 + random.Next(-Roughness * length, Roughness * length);
-            map.HeightMap[posX, posY] = (byte)(result > 0 ? result % 255 : 0);
+            var result = sum / 4 + random.Next((int)(-Roughness * length), (int)(Roughness * length));
+            map.HeightMap[posX, posY] = (byte)(result > 0 ? result % 255: 0);
         }
     }
 }
