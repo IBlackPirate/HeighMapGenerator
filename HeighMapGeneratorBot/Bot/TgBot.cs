@@ -50,54 +50,7 @@ namespace HeighMapGeneratorBot
 
         public async void SendPhoto(long chatId, Bitmap image)
         {
-            //await botClient.SendPhotoAsync();
+            SendMessage(chatId, "Вы получили фото", MenuTreeMaker.EmptyMurkup);
         }
-
-        //void InitializeButtons()
-        //{
-        //    MapMessages = new List<Tuple<string, Func<ReplyMarkupBase>>>();
-        //    MapMessages[0] = Tuple.Create<string, Func<ReplyMarkupBase>>("Укажите размер карты. Размер должен соответствовать формуле 2^n + 1", GetEmptyMarkup);
-        //    MapMessages[1] = Tuple.Create<string, Func<ReplyMarkupBase>>("Укажите сид - число, влияющее на рандомизированные значения", GetEmptyMarkup);
-        //    MapMessages["Укажите тип биома, в котором располагается местность"] = GetBiomes;
-        //    MapMessages["Необходимо ли сглаживание?"] = GetYesNoButtons;
-        //    MapMessages["Желаете ли указать высоты краев карты?"] = GetYesNoButtons;
-        //    MapMessages["Введите высоту левого верхнего угла"] = () => new ReplyKeyboardRemove();
-        //    MapMessages["Введите высоту левого нижнего угла"] = () => new ReplyKeyboardRemove();
-        //    MapMessages["Введите высоту правого верхнего угла"] = () => new ReplyKeyboardRemove();
-        //    MapMessages["Введите высоту правого нижнего угла"] = () => new ReplyKeyboardRemove();
-        //}
-
-        bool TryGetSquareMapSize(out int size)
-        {
-            //Определяем, соответствует ли пришедшее число 2^n + 1
-            if (int.TryParse(message.Message.Text, out size))
-                if (size > 0 && ((size - 1) & (size - 2)) == 0)
-                    return true;
-            return false;
-        }
-
-        ReplyMarkupBase CreateMap(int size)
-        {
-            var rkm = new ReplyKeyboardRemove();
-            return rkm;
-        }
-
-        ReplyMarkupBase GetBiomes()
-        {
-            throw new NotImplementedException();
-        }
-
-        ReplyMarkupBase GetYesNoButtons()
-        {
-            var rkm = new ReplyKeyboardMarkup();
-            rkm.Keyboard = new KeyboardButton[][]
-                {
-                    new[] { new KeyboardButton("Да") },
-                    new[] { new KeyboardButton("Нет") },
-                };
-            return rkm;
-        }
-
-        private ReplyMarkupBase GetEmptyMarkup() => new ReplyKeyboardRemove();
     }
 }

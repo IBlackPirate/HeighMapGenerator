@@ -17,9 +17,9 @@ namespace HeighMapGeneratorBot
         public List<MenuTreeNode> NextNodes;
         public Action<MessageEventArgs> ButtonReaction;
 
-        public void PrintCurrentMessage(TgBot bot, MessageEventArgs msg)
+        public void PrintCurrentMessage(TgBot bot, MessageEventArgs msgArg)
         {
-            bot.SendMessage(msg.Message.Chat.Id, CurrentMessage, CurrentButtons);
+            bot.SendMessage(msgArg.Message.Chat.Id, CurrentMessage, CurrentButtons);
         }
 
         public MenuTreeNode(string message, ReplyMarkupBase buttons)
@@ -35,11 +35,17 @@ namespace HeighMapGeneratorBot
     {
         public readonly MenuTreeNode Root;
         public MenuTreeNode Current;
+        public MenuTreeNode Tail;
 
         public MenuTree(MenuTreeNode root)
         {
-            Root = root;
-            Current = Root;
+            Root = Current = Tail = root;
+        }
+
+        public void AddNode(MenuTreeNode node)
+        {
+            Tail.NextNodes.Add(node);
+            Tail = node;
         }
     }
 }
