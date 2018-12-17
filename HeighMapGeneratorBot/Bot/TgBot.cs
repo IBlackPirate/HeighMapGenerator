@@ -9,6 +9,8 @@ using Telegram.Bot.Types.ReplyMarkups;
 using Telegram.Bot.Types;
 using System.Threading;
 using System.Drawing;
+using System.IO;
+using System.Drawing.Imaging;
 
 namespace HeighMapGeneratorBot
 {
@@ -50,7 +52,12 @@ namespace HeighMapGeneratorBot
 
         public async void SendPhoto(long chatId, Bitmap image)
         {
-            SendMessage(chatId, "Вы получили фото", MenuTreeMaker.EmptyMurkup);
+            using (MemoryStream ms = new MemoryStream())
+            {
+                image.Save(ms, ImageFormat.Png);
+                ms.Position = 0;
+                await botClient.SendPhotoAsync(chatId, new Telegram.Bot.Types.InputFiles.InputOnlineFile(ms));
+            }
         }
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
 using Telegram.Bot.Args;
@@ -374,7 +375,7 @@ namespace HeighMapGeneratorBot
 
                     bot.SendPhoto(chatId, heightMap);
                     bot.SendPhoto(chatId, colorMap);
-
+                    DataBaseReaderWriter.AddMap(map, chatId);
                     menu.Current = menu.Current.NextNodes.First();
                 }
                 menu.Current.PrintCurrentMessage(bot, msgArg);
