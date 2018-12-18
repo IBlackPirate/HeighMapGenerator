@@ -24,22 +24,25 @@ namespace HeighMapGeneratorBot
         static object lockObj = new object();
         const bool resolveNames = true;
 
-        private MenuTree menu;
+        private Dictionary<long, MenuTree> menuToUser;
 
         public void StartBot()
         {
             botClient = new TelegramBotClient("666935188:AAH68Z3CWZ9gGsiH37CAlxSjzteDW3QwTL8");
-            menu = MenuTreeMaker.CreateMenu(this);
             var me = botClient.GetMeAsync().Result;
             botClient.StartReceiving();
+            menuToUser = new Dictionary<long, MenuTree>();
 
             botClient.OnMessage += Bot_OnMessage;
             Thread.Sleep(int.MaxValue);
         }
 
-        async void Bot_OnMessage(object sender, MessageEventArgs msg)
+        async void Bot_OnMessage(object sender, MessageEventArgs msgArg)
         {
-            menu.Current.ButtonReaction(msg);
+            var id = msgArg.Message.Chat.Id;
+            if (!menuToUser.ContainsKey(id))
+                menuToUser[id] = MenuTreeMaker.CreateMenu(this);
+            menuToUser[id].Current.ButtonReaction(msgArg);
         }
 
         public async void SendMessage(long chatId, string text, ReplyMarkupBase buttons)
