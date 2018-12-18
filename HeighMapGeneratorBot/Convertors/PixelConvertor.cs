@@ -21,7 +21,7 @@ namespace HeighMapGeneratorBot
         public static byte[] ToByte(this Pixel[] arr, int sizeX, int sizeY)
         {
             var res = new byte[sizeX * sizeY];
-            for (int i = 0; i < sizeX * sizeY; i += 3)
+            for (int i = 0; i < sizeX * sizeY-2; i += 3)
             {
                 res[i] = (byte)arr[i].R;
                 res[i + 1] = (byte)arr[i].G;

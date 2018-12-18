@@ -17,11 +17,15 @@ namespace HeighMapGeneratorBot
 
         public static void AddMap(Map map, long personId)
         {
+            //if (UserExist(personId))
+            //{
+
+            //}
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                var queryString = $"UPDATE Map" +
-                    $"SET heightMap={(object)map.HeightMap.ToArray()}, colorMap = {(object)map.ColorMap.ToArray().ToByte(map.SizeX, map.SizeY)}" +
-                    $"size={map.SizeX}, sizeY={map.SizeY}" +
+                var queryString = $"UPDATE Map " +
+                    $"SET heightMap={(object)map.HeightMap.ToArray()}, colorMap = {(object)map.ColorMap.ToArray().ToByte(map.SizeX, map.SizeY)}, " +
+                    $"size={map.SizeX}, sizeY={map.SizeY} " +
                     $"WHERE idUser={personId}";
                 SqlCommand command = new SqlCommand(queryString, connection);
                 connection.Open();
@@ -38,7 +42,7 @@ namespace HeighMapGeneratorBot
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                var queryString = $"SELECT heightMap, colorMap, sizeX, sizeY" +
+                var queryString = $"SELECT heightMap, colorMap, sizeX, sizeY, " +
                     $"FROM Map " +
                     $"WHERE idUser={personId}";
                 SqlCommand command = new SqlCommand(queryString, connection);

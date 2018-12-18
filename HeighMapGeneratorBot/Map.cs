@@ -18,6 +18,7 @@ namespace HeighMapGeneratorBot
             SizeX = sizeX;
             SizeY = sizeY;
             HeightMap = new byte[SizeX, SizeY];
+            ColorMap = new Pixel[SizeX, SizeY];
         }
 
         public Map(byte[,] heightMap, Pixel[,] colorMap, int sizeX, int sizeY)

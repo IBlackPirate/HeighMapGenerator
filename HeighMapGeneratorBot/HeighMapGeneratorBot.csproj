@@ -166,8 +166,8 @@
     <Compile Include="Convertors\ArrayConvertor.cs" />
     <Compile Include="ColorMap\Biome.cs" />
     <Compile Include="ColorMap\ColorMapGenerator.cs" />
-    <Compile Include="DataBase\DataBaseReaderWriter.cs" />
     <Compile Include="Algorithms\DiamondSquareGenerator.cs" />
+    <Compile Include="DataBase\DataBaseReaderWriter.cs" />
     <Compile Include="IGenerator.cs" />
     <Compile Include="Convertors\ImageConvertor.cs" />
     <Compile Include="Map.cs" />

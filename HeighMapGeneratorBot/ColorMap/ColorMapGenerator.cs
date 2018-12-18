@@ -13,7 +13,6 @@ namespace HeighMapGeneratorBot
         public static Bitmap GenerateColor(this Map map, BiomeType biomeType, int smoothIntensivity = 0)
         {
             var currentBiome = Biomes[(int)biomeType].HeightToColor;
-            var result = new Pixel[map.SizeX, map.SizeY];
 
             for (int x = 0; x < map.SizeX; x++)
             {
@@ -23,7 +22,7 @@ namespace HeighMapGeneratorBot
                     {
                         if (map.HeightMap[x, y] <= layerMaxHeight)
                         {
-                            result[x, y] = currentBiome[layerMaxHeight](map.HeightMap[x, y]);
+                            map.ColorMap[x,y] = currentBiome[layerMaxHeight](map.HeightMap[x, y]);
                             break;
                         }
                     }
@@ -32,10 +31,10 @@ namespace HeighMapGeneratorBot
 
             for(int i = 0; i < smoothIntensivity; i++)
             {
-                result.SmoothImage(map.SizeX, map.SizeY);
+                map.ColorMap.SmoothImage(map.SizeX, map.SizeY);
             }
 
-            return result.ToColorImage(map.SizeX, map.SizeY);
+            return map.ColorMap.ToColorImage(map.SizeX, map.SizeY);
         }
 
         public static List<Biome> InicializeBiomes()
