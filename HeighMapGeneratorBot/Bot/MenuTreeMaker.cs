@@ -71,11 +71,13 @@ namespace HeighMapGeneratorBot
                         menu.Current.PrintCurrentMessage(bot, msgArg);
                         break;
                     case "Вывести предыдущую созданную":
-                        var map = DataBaseReaderWriter.GetMap(msgArg.Message.Chat.Id);
-                        var chatId = msgArg.Message.Chat.Id;
-                        bot.SendPhoto(chatId, map.ToHeightImage());
-                        bot.SendPhoto(chatId, map.ColorMap.ToColorImage(map.SizeX, map.SizeY));
-                        break;
+                        if (DataBaseReaderWriter.TryGetMap(msgArg.Message.Chat.Id, out Map map))
+                        {
+                            var chatId = msgArg.Message.Chat.Id;
+                            bot.SendPhoto(chatId, map.ToHeightImage());
+                            bot.SendPhoto(chatId, map.ColorMap.ToColorImage(map.SizeX, map.SizeY));
+                        }
+                        break;    
                     default:
                         root.PrintCurrentMessage(bot, msgArg);
                         break;

@@ -29,6 +29,11 @@ namespace HeighMapGeneratorBot
             NextNodes = new List<MenuTreeNode>();
             ButtonReaction = (x) => Console.WriteLine($"received {x.Message.Text}, action is empty");
         }
+
+        public override string ToString()
+        {
+            return CurrentMessage;
+        }
     }
 
     class MenuTree

@@ -29,11 +29,11 @@ namespace HeighMapGeneratorBot
         {
             var res = new T[sizeX, sizeY];
 
-            for (int i = 0; i < sizeY; i++)
+            for (int i = 0; i < sizeX; i++)
             {
-                for (int j = 0; j < sizeX; j++)
+                for (int j = 0; j < sizeY; j++)
                 {
-                    res[i, j] = arr[sizeX * i + j];
+                    res[i, j] = arr[sizeY * i + j];
                 }
             }
             return res;
