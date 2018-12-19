@@ -10,6 +10,11 @@ namespace HeighMapGeneratorBot
 {
     static class ImageConvertor
     {
+        /// <summary>
+        /// Преобразование байтовой карты высот в изображение
+        /// </summary>
+        /// <param name="map"></param>
+        /// <returns></returns>
         public static Bitmap ToHeightImage(this Map map)
         {
             Bitmap image = new Bitmap(map.SizeX, map.SizeY);
@@ -24,6 +29,13 @@ namespace HeighMapGeneratorBot
             return image;
         }
 
+        /// <summary>
+        /// Преобразование пиктельной карты цветов в изображение
+        /// </summary>
+        /// <param name="pixels"></param>
+        /// <param name="sizeX"></param>
+        /// <param name="sizeY"></param>
+        /// <returns></returns>
         public static Bitmap ToColorImage(this Pixel[,] pixels, int sizeX, int sizeY)
         {
             var res = new Bitmap(sizeX, sizeY);

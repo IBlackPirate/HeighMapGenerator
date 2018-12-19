@@ -12,10 +12,15 @@ namespace HeighMapGeneratorBot
 {
     static class DataBaseReaderWriter
     {
+        // Строка подключения
         private static readonly string connectionString = "Data Source=(local);Initial Catalog=Maps;"
                 + "Integrated Security=true";
 
-
+        /// <summary>
+        /// Добавление карты пользователю
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="personId"></param>
         public static void AddMap(Map map, long personId)
         {
             TryAddUser(personId);
@@ -23,7 +28,7 @@ namespace HeighMapGeneratorBot
             var queryString = $"UPDATE Map " +
                     $"SET heightMap=@heightMap, colorMap = @colorMap, " +
                     $"sizeX=@sizeX, sizeY=@sizeY " +
-                    $"WHERE idUser={personId}";
+                    $"WHERE idUser=@idUser";
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -34,10 +39,13 @@ namespace HeighMapGeneratorBot
                     SqlParameter colorMap = command.Parameters.Add("@colorMap", SqlDbType.VarBinary);
                     SqlParameter sizeX = command.Parameters.Add("@sizeX", SqlDbType.Int);
                     SqlParameter sizeY = command.Parameters.Add("@sizeY", SqlDbType.Int);
+                    SqlParameter idUser = command.Parameters.Add("@idUser", SqlDbType.Int);
+
                     heightMap.Value = map.HeightMap.ToArray();
                     colorMap.Value = map.ColorMap.ToArray().ToByte();
                     sizeX.Value = map.SizeX;
                     sizeY.Value = map.SizeY;
+                    idUser.Value = personId;
 
                     command.ExecuteNonQuery();
                 }
@@ -50,9 +58,11 @@ namespace HeighMapGeneratorBot
             {
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
-                    var queryString = $"INSERT INTO Map(idUser) VALUES ({personId})";
+                    var queryString = $"INSERT INTO Map(idUser) VALUES (@idUser)";
                     SqlCommand command = new SqlCommand(queryString, connection);
                     connection.Open();
+                    var param = new SqlParameter("@idUser", personId);
+                    command.Parameters.Add(param);
                     var reader = command.ExecuteNonQuery();
                 }
             }

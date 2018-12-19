@@ -8,6 +8,12 @@ namespace HeighMapGeneratorBot
 {
     static class ArrayConvertor
     {
+        /// <summary>
+        /// Конвертация из двухмерного массива в одномерный
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="arr"></param>
+        /// <returns></returns>
         public static T[] ToArray<T>(this T[,] arr)
         {
             var len = arr.GetLength(0);
@@ -25,6 +31,14 @@ namespace HeighMapGeneratorBot
             return res.ToArray();
         }
 
+        /// <summary>
+        /// Конвертация из одномерного массива в двухмерный
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="arr"></param>
+        /// <param name="sizeX"></param>
+        /// <param name="sizeY"></param>
+        /// <returns></returns>
         public static T[,] ToMatrix<T>(this T[] arr, int sizeX, int sizeY)
         {
             var res = new T[sizeX, sizeY];

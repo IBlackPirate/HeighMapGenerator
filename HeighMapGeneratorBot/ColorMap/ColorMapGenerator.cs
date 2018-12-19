@@ -10,6 +10,13 @@ namespace HeighMapGeneratorBot
     static class ColorMapGenerator
     {
         public static readonly List<Biome> Biomes=InicializeBiomes();
+        /// <summary>
+        /// Генерация ColorMap
+        /// </summary>
+        /// <param name="map"></param>
+        /// <param name="biomeType">Тип биома</param>
+        /// <param name="smoothIntensivity">Интенсивность сглаживания</param>
+        /// <returns></returns>
         public static Bitmap GenerateColor(this Map map, BiomeType biomeType, int smoothIntensivity = 0)
         {
             var currentBiome = Biomes[(int)biomeType].HeightToColor;
@@ -37,13 +44,17 @@ namespace HeighMapGeneratorBot
             return map.ColorMap.ToColorImage(map.SizeX, map.SizeY);
         }
 
+        /// <summary>
+        /// Инициализация всех типов биома
+        /// </summary>
+        /// <returns></returns>
         public static List<Biome> InicializeBiomes()
         {
             var ran = new Random();
             var res = new List<Biome>
             {
                 new Biome(BiomeType.Пустыня, new Dictionary<byte, Func<byte, Pixel>>{
-                    { 50, (heigh) => new Pixel(heigh/5, heigh/5, 51 + heigh / 2 + ran.Next(-5, 5)) },
+                    { 30, (heigh) => new Pixel(heigh/5, heigh/5, 51 + heigh / 2 + ran.Next(-5, 5)) },
                     { 160, (heigh) => new Pixel(ran.Next(150, 190) + heigh / 2 - 90, ran.Next(150, 190) + heigh / 2 - 90, ran.Next(50, 75) + heigh / 2 - 50) },
                     { 255, (heigh) => new Pixel(heigh / 2 + ran.Next(-7, 7) - 25, heigh / 2 + ran.Next(-7, 7) - 25, heigh / 2 + ran.Next(-7, 7) - 12)} }
                 ),
@@ -57,6 +68,12 @@ namespace HeighMapGeneratorBot
             return res;
         }
 
+        /// <summary>
+        /// Сглаживание
+        /// </summary>
+        /// <param name="pixels"></param>
+        /// <param name="sizeX"></param>
+        /// <param name="sizeY"></param>
         public static void SmoothImage(this Pixel[,] pixels, int sizeX, int sizeY)
         {
             for (int i = 0; i < sizeX - 1; i++)

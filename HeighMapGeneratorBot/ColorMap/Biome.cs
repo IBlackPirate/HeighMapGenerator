@@ -15,7 +15,9 @@ namespace HeighMapGeneratorBot
 
     class Biome
     {
+        // Тип биома
         public readonly BiomeType Type;
+        // Список диапазонов высот и соответствующие им функции преобразования высоты в цвет
         public readonly Dictionary<byte, Func<byte, Pixel>> HeightToColor;
 
         public Biome(BiomeType type, Dictionary<byte, Func<byte, Pixel>> heightToColor)
