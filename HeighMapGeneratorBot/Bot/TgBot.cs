@@ -21,27 +21,20 @@ namespace HeighMapGeneratorBot
     class TgBot
     {
         private ITelegramBotClient botClient;
-        private MessageEventArgs message;
-
         static CountdownEvent countdown;
         static int upCount = 0;
         static object lockObj = new object();
         const bool resolveNames = true;
 
+        // Сопостовляет ID пользователя экземпляр меню
         private Dictionary<long, MenuTree> menuToUser;
 
+        /// <summary>
+        /// Инициализация и запуск бота, подписка на получение сообщений
+        /// </summary>
         public void StartBot()
         {
-            botClient = new TelegramBotClient("666935188:AAH68Z3CWZ9gGsiH37CAlxSjzteDW3QwTL8", new SocksWebProxy(
-                        new ProxyConfig(
-                            IPAddress.Parse("127.0.0.1"),
-                            GetNextFreePort(),
-                            IPAddress.Parse("185.20.184.217"),
-                            3693,
-                            ProxyConfig.SocksVersion.Five,
-                            "userid66n9",
-                            "pSnEA7M"),
-                        false));
+            botClient = new TelegramBotClient("666935188:AAH68Z3CWZ9gGsiH37CAlxSjzteDW3QwTL8", GetProxy());
             var me = botClient.GetMeAsync().Result;
             botClient.StartReceiving();
             menuToUser = new Dictionary<long, MenuTree>();
@@ -50,24 +43,47 @@ namespace HeighMapGeneratorBot
             Thread.Sleep(int.MaxValue);
         }
 
+        #region Proxy
+        private SocksWebProxy GetProxy()
+        {
+            return new SocksWebProxy(
+                       new ProxyConfig(
+                           IPAddress.Parse("127.0.0.1"),
+                           GetNextFreePort(),
+                           IPAddress.Parse("185.20.184.217"),
+                           3693,
+                           ProxyConfig.SocksVersion.Five,
+                           "userid66n9",
+                           "pSnEA7M"),
+                       false);
+        }
+
         private int GetNextFreePort()
         {
             var listener = new TcpListener(IPAddress.Loopback, 0);
             listener.Start();
             var port = ((IPEndPoint)listener.LocalEndpoint).Port;
             listener.Stop();
-
             return port;
         }
+        #endregion
 
+        // При получении сообщения переотправляем его для обработки на конкретный пункт меню, 
+        // в котором находится данный пользователь
         void Bot_OnMessage(object sender, MessageEventArgs msgArg)
         {
             var id = msgArg.Message.Chat.Id;
             if (!menuToUser.ContainsKey(id))
-                menuToUser[id] = MenuTreeMaker.CreateMenu(this);
+                menuToUser[id] = new MenuTreeMaker().CreateMenu(this);
             menuToUser[id].Current.ButtonReaction(msgArg);
         }
 
+        /// <summary>
+        /// Отправляет сообщение пользователю
+        /// </summary>
+        /// <param name="chatId">Идентификатор диалога с пользователем</param>
+        /// <param name="text">Текст сообщения</param>
+        /// <param name="buttons">Кнопки</param>
         public async void SendMessage(long chatId, string text, ReplyMarkupBase buttons)
         {
             await botClient.SendTextMessageAsync(
@@ -76,6 +92,11 @@ namespace HeighMapGeneratorBot
                 replyMarkup: buttons);
         }
 
+        /// <summary>
+        /// Отправляет фото пользователю
+        /// </summary>
+        /// <param name="chatId">Идентификатор диалога с пользователем</param>
+        /// <param name="image">Изображение</param>
         public async void SendPhoto(long chatId, Bitmap image)
         {
             using (MemoryStream ms = new MemoryStream())

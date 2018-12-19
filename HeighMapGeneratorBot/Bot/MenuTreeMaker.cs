@@ -12,13 +12,40 @@ namespace HeighMapGeneratorBot
 {
     class MenuTreeMaker
     {
-        private static MenuTree menu;
-        private static TgBot bot;
+        private MenuTree menu;
+        private TgBot bot;
 
-        public static MenuTree CreateMenu(TgBot tgBot)
+        public static ReplyMarkupBase EmptyMurkup => new ReplyKeyboardRemove();
+        public static ReplyKeyboardMarkup YesNoMarkup
+        {
+            get
+            {
+                var rkm = new ReplyKeyboardMarkup();
+                rkm.Keyboard = new KeyboardButton[][]
+                {
+                    new[] { new KeyboardButton("Да") },
+                    new[] { new KeyboardButton("Нет") }
+                };
+                return rkm;
+            }
+        }
+
+        /// <summary>
+        /// Создает меню для телеграм-бота
+        /// </summary>
+        /// <param name="tgBot">Бот, через которого можно происходит отправка сообщений</param>
+        /// <returns></returns>
+        public MenuTree CreateMenu(TgBot tgBot)
         {
             bot = tgBot;
             menu = new MenuTree(GetRoot());
+            InitializeNodes();
+            return menu;
+        }
+
+        // Инициализация пунктов меню
+        private void InitializeNodes()
+        {
             var buildNode = GetBuildNode();
             var borderNode = GetBorderValueNode();
             var angleHeightNode = GetAngleHeightNode();
@@ -40,28 +67,12 @@ namespace HeighMapGeneratorBot
             menu.AddNode(GetRightBottomAngleHeightNode());
             menu.AddNode(buildNode);
             menu.AddNode(menu.Root);
-            return menu;
-        }
-
-        public static ReplyMarkupBase EmptyMurkup => new ReplyKeyboardRemove();
-        public static ReplyKeyboardMarkup YesNoMarkup
-        {
-            get
-            {
-                var rkm = new ReplyKeyboardMarkup();
-                rkm.Keyboard = new KeyboardButton[][]
-                    {
-                    new[] { new KeyboardButton("Да") },
-                    new[] { new KeyboardButton("Нет") }
-                    };
-                return rkm;
-            }
         }
 
         #region RootNode
-        static MenuTreeNode GetRoot()
+        private MenuTreeNode GetRoot()
         {
-            var root = new MenuTreeNode("Приветствую тебя. Что бы ты желал?", GetMenuRootButtons());
+            var root = new MenuTreeNode("Приветствую тебя. Ты можешь:", GetMenuRootButtons());
             root.ButtonReaction = (msgArg) =>
             {
                 switch (msgArg.Message.Text)
@@ -77,7 +88,7 @@ namespace HeighMapGeneratorBot
                             bot.SendPhoto(chatId, map.ToHeightImage());
                             bot.SendPhoto(chatId, map.ColorMap.ToColorImage(map.SizeX, map.SizeY));
                         }
-                        break;    
+                        break;
                     default:
                         root.PrintCurrentMessage(bot, msgArg);
                         break;
@@ -86,7 +97,7 @@ namespace HeighMapGeneratorBot
             return root;
         }
 
-        static ReplyMarkupBase GetMenuRootButtons()
+        private ReplyMarkupBase GetMenuRootButtons()
         {
             var rkm = new ReplyKeyboardMarkup();
             rkm.Keyboard = new KeyboardButton[][]
@@ -98,9 +109,10 @@ namespace HeighMapGeneratorBot
         }
         #endregion
         #region SizeNode
-        static MenuTreeNode GetSizeNode()
+        private MenuTreeNode GetSizeNode()
         {
-            var node = new MenuTreeNode("Укажите размер карты. Размер должен соответствовать формуле 2^n + 1", EmptyMurkup);
+            var info = "Укажите размер карты, в пикселях. Размер должен соответствовать формуле 2^n + 1";
+            var node = new MenuTreeNode(info, EmptyMurkup);
             node.ButtonReaction = (msgArg) =>
             {
                 int size;
@@ -114,7 +126,7 @@ namespace HeighMapGeneratorBot
             return node;
         }
 
-        static bool TryGetSquareMapSize(out int size, MessageEventArgs msgArg)
+        private bool TryGetSquareMapSize(out int size, MessageEventArgs msgArg)
         {
             //Определяем, соответствует ли пришедшее число 2^n + 1
             if (int.TryParse(msgArg.Message.Text, out size))
@@ -123,43 +135,11 @@ namespace HeighMapGeneratorBot
             return false;
         }
         #endregion
-
-        private static MenuTreeNode GetSeedNode()
-        {
-            var node = new MenuTreeNode("Укажите сид - число, влияющее на рандомизированные значения", EmptyMurkup);
-            node.ButtonReaction = (msgArg) =>
-            {
-                int seed;
-                if (int.TryParse(msgArg.Message.Text, out seed))
-                {
-                    MapCreator.Seed = seed;
-                    menu.Current = menu.Current.NextNodes.First();
-                }
-                menu.Current.PrintCurrentMessage(bot, msgArg);
-            };
-            return node;
-        }
-
-        private static MenuTreeNode GetRoughnessNode()
-        {
-            var node = new MenuTreeNode("Введите шерховатость карты - дробное значение", EmptyMurkup);
-            node.ButtonReaction = (msgArg) =>
-            {
-                float roughness;
-                if (float.TryParse(msgArg.Message.Text, out roughness))
-                {
-                    MapCreator.Roughness = roughness;
-                    menu.Current = menu.Current.NextNodes.First();
-                }
-                menu.Current.PrintCurrentMessage(bot, msgArg);
-            };
-            return node;
-        }
-
         #region BiomeNode
-        private static MenuTreeNode GetBiomeNode()
+        private MenuTreeNode GetBiomeNode()
         {
-            var node = new MenuTreeNode("Укажите тип биома, в котором располагается местность", GetBiomesButtons());
+            var info = "Укажите тип биома, в котором располагается местность";
+            var node = new MenuTreeNode(info, GetBiomesButtons());
             node.ButtonReaction = (msgArg) =>
             {
                 switch (msgArg.Message.Text)
@@ -178,7 +158,7 @@ namespace HeighMapGeneratorBot
             return node;
         }
 
-        private static ReplyMarkupBase GetBiomesButtons()
+        private ReplyMarkupBase GetBiomesButtons()
         {
             var rkm = new ReplyKeyboardMarkup();
             rkm.Keyboard = new KeyboardButton[][]
@@ -190,7 +170,7 @@ namespace HeighMapGeneratorBot
         }
         #endregion
         #region SmoothNode
-        private static MenuTreeNode GetAskSmoothNode()
+        private MenuTreeNode GetAskSmoothNode()
         {
             var node = new MenuTreeNode("Необходимо ли сглаживание?", YesNoMarkup);
             node.ButtonReaction = (msgArg) =>
@@ -209,7 +189,7 @@ namespace HeighMapGeneratorBot
             return node;
         }
 
-        private static MenuTreeNode GetSmoothNode()
+        private MenuTreeNode GetSmoothNode()
         {
             var node = new MenuTreeNode("Введите интенсивность сглаживания - целое число от 0 до 5", EmptyMurkup);
             node.ButtonReaction = (msgArg) =>
@@ -226,7 +206,7 @@ namespace HeighMapGeneratorBot
         }
         #endregion
         #region BorderNode
-        private static MenuTreeNode GetBorderValueNode()
+        private MenuTreeNode GetBorderValueNode()
         {
             var node = new MenuTreeNode("Как будет определяться высота точек по границе карты?", GetBorderMarkup());
             node.ButtonReaction = (msgArg) =>
@@ -247,7 +227,7 @@ namespace HeighMapGeneratorBot
             return node;
         }
 
-        private static ReplyKeyboardMarkup GetBorderMarkup()
+        private ReplyKeyboardMarkup GetBorderMarkup()
         {
             var rkm = new ReplyKeyboardMarkup();
             rkm.Keyboard = new KeyboardButton[][]
@@ -258,7 +238,7 @@ namespace HeighMapGeneratorBot
             return rkm;
         }
 
-        private static MenuTreeNode GetConstBorderNode()
+        private MenuTreeNode GetConstBorderNode()
         {
             var node = new MenuTreeNode("Введите значение - целое число от 0 до 255", EmptyMurkup);
             node.ButtonReaction = (msgArg) =>
@@ -275,7 +255,7 @@ namespace HeighMapGeneratorBot
         }
         #endregion
         #region AngleNode
-        private static MenuTreeNode GetAngleHeightNode()
+        private MenuTreeNode GetAngleHeightNode()
         {
             var node = new MenuTreeNode("Желаете указать высоты краев?", YesNoMarkup);
             node.ButtonReaction = (msgArg) =>
@@ -294,7 +274,7 @@ namespace HeighMapGeneratorBot
             return node;
         }
 
-        private static MenuTreeNode GetLeftTopAngleHeightNode()
+        private MenuTreeNode GetLeftTopAngleHeightNode()
         {
             var node = new MenuTreeNode("Введите высоту левого верхнего угла - целое число от 0 до 255", EmptyMurkup);
             node.ButtonReaction = (msgArg) =>
@@ -310,7 +290,7 @@ namespace HeighMapGeneratorBot
             return node;
         }
 
-        private static MenuTreeNode GetLeftBottomAngleHeightNode()
+        private MenuTreeNode GetLeftBottomAngleHeightNode()
         {
             var node = new MenuTreeNode("Введите высоту левого нижнего угла - целое число от 0 до 255", EmptyMurkup);
             node.ButtonReaction = (msgArg) =>
@@ -327,7 +307,7 @@ namespace HeighMapGeneratorBot
         }
 
 
-        private static MenuTreeNode GetRightTopAngleHeightNode()
+        private MenuTreeNode GetRightTopAngleHeightNode()
         {
             var node = new MenuTreeNode("Введите высоту правого верхнего угла - целое число от 0 до 255", EmptyMurkup);
             node.ButtonReaction = (msgArg) =>
@@ -343,7 +323,7 @@ namespace HeighMapGeneratorBot
             return node;
         }
 
-        private static MenuTreeNode GetRightBottomAngleHeightNode()
+        private MenuTreeNode GetRightBottomAngleHeightNode()
         {
             var node = new MenuTreeNode("Введите высоту правого нижнего угла - целое число от 0 до 255", EmptyMurkup);
             node.ButtonReaction = (msgArg) =>
@@ -359,13 +339,13 @@ namespace HeighMapGeneratorBot
             return node;
         }
         #endregion
-
-        private static MenuTreeNode GetBuildNode()
+        #region BuidNode
+        private MenuTreeNode GetBuildNode()
         {
             var node = new MenuTreeNode("Все готово", GetBuildMarkup());
             node.ButtonReaction = (msgArg) =>
             {
-                if(msgArg.Message.Text == "Создать карту")
+                if (msgArg.Message.Text == "Создать карту")
                 {
                     var chatId = msgArg.Message.Chat.Id;
                     bot.SendMessage(chatId, "Начался процесс создания. Он может идти длительное время", EmptyMurkup);
@@ -385,11 +365,48 @@ namespace HeighMapGeneratorBot
             return node;
         }
 
-        private static ReplyKeyboardMarkup GetBuildMarkup()
+        private ReplyKeyboardMarkup GetBuildMarkup()
         {
             var rkm = new ReplyKeyboardMarkup();
             rkm.Keyboard = new KeyboardButton[][] { new[] { new KeyboardButton("Создать карту") } };
             return rkm;
         }
+        #endregion
+
+        private MenuTreeNode GetSeedNode()
+        {
+            var info = "Укажите сид - целое число, влияющее на рандомизированные значения";
+            var node = new MenuTreeNode(info, EmptyMurkup);
+            node.ButtonReaction = (msgArg) =>
+            {
+                int seed;
+                if (int.TryParse(msgArg.Message.Text, out seed))
+                {
+                    MapCreator.Seed = seed;
+                    menu.Current = menu.Current.NextNodes.First();
+                }
+                menu.Current.PrintCurrentMessage(bot, msgArg);
+            };
+            return node;
+        }
+
+        private MenuTreeNode GetRoughnessNode()
+        {
+            var info = "Введите шерховатость карты - дробное значение. Например: 1,6. На больших картах низкое значение шерховатости " +
+                "приведет к преобладания равнинной местности, а высокое значение на маленьких - к слишком резким перепадам высоты";
+            var node = new MenuTreeNode(info, EmptyMurkup);
+            node.ButtonReaction = (msgArg) =>
+            {
+                float roughness;
+                if (float.TryParse(msgArg.Message.Text, out roughness))
+                {
+                    MapCreator.Roughness = roughness;
+                    menu.Current = menu.Current.NextNodes.First();
+                }
+                menu.Current.PrintCurrentMessage(bot, msgArg);
+            };
+            return node;
+        }
+
     }
 }

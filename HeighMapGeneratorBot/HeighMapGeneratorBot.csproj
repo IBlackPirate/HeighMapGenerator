@@ -174,7 +174,7 @@
     <Compile Include="ColorMap\ColorMapGenerator.cs" />
     <Compile Include="Algorithms\DiamondSquareGenerator.cs" />
     <Compile Include="DataBase\DataBaseReaderWriter.cs" />
-    <Compile Include="IGenerator.cs" />
+    <Compile Include="Algorithms\IGenerator.cs" />
     <Compile Include="Convertors\ImageConvertor.cs" />
     <Compile Include="Map.cs" />
     <Compile Include="Bot\MenuTree.cs" />
