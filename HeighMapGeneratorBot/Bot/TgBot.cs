@@ -34,7 +34,7 @@ namespace HeighMapGeneratorBot
         /// </summary>
         public void StartBot()
         {
-            botClient = new TelegramBotClient("666935188:AAH68Z3CWZ9gGsiH37CAlxSjzteDW3QwTL8", GetProxy());
+            botClient = new TelegramBotClient("666935188:AAH68Z3CWZ9gGsiH37CAlxSjzteDW3QwTL8");//, GetProxy());
             var me = botClient.GetMeAsync().Result;
             botClient.StartReceiving();
             menuToUser = new Dictionary<long, MenuTree>();

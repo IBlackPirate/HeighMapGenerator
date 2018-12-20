@@ -23,7 +23,10 @@ namespace HeighMapGeneratorBot
         /// <param name="personId"></param>
         public static void AddMap(Map map, long personId)
         {
-            TryAddUser(personId);
+            if (!IsUserExists(personId))
+            {
+                AddUser(personId);
+            }
 
             var queryString = $"UPDATE Map " +
                     $"SET heightMap=@heightMap, colorMap = @colorMap, " +
@@ -47,62 +50,90 @@ namespace HeighMapGeneratorBot
                     sizeY.Value = map.SizeY;
                     idUser.Value = personId;
 
-                    command.ExecuteNonQuery();
+                    ExequteCommand(command);
                 }
             }
         }
 
-        private static void TryAddUser(long personId)
-        {
-            try
-            {
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                {
-                    var queryString = $"INSERT INTO Map(idUser) VALUES (@idUser)";
-                    SqlCommand command = new SqlCommand(queryString, connection);
-                    connection.Open();
-                    var param = new SqlParameter("@idUser", personId);
-                    command.Parameters.Add(param);
-                    var reader = command.ExecuteNonQuery();
-                }
-            }
-            catch { }
-        }
 
-        public static bool TryGetMap(long personId, out Map map)
+        public static Map GetMap(long personId)
         {
+            if (!IsUserExists(personId))
+                return null;
+
+
             byte[] heightMap = null;
             byte[] colorMap = null;
             int sizeX = 0;
             int sizeY = 0;
 
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                var queryString = $"SELECT heightMap, colorMap, sizeX, sizeY " +
+                    $"FROM Map " +
+                    $"WHERE idUser={personId}";
+                SqlCommand command = new SqlCommand(queryString, connection);
+                connection.Open();
+                var reader = ExequteCommand(command);
+
+                if (reader == null)
+                {
+                    return null;
+                }
+
+                if (reader.Read())
+                {
+                    heightMap = (byte[])reader["heightMap"];
+                    colorMap = (byte[])reader["colorMap"];
+                    sizeX = (int)reader["sizeX"];
+                    sizeY = (int)reader["sizeY"];
+                }
+            }
+            return new Map(heightMap.ToMatrix(sizeX, sizeY), colorMap.ToPixels(sizeX, sizeY).ToMatrix(sizeX, sizeY), sizeX, sizeY);
+        }
+
+        private static SqlDataReader ExequteCommand(SqlCommand command)
+        {
             try
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
-                {
-                    var queryString = $"SELECT heightMap, colorMap, sizeX, sizeY " +
-                        $"FROM Map " +
-                        $"WHERE idUser={personId}";
-                    SqlCommand command = new SqlCommand(queryString, connection);
-                    connection.Open();
-                    var reader = command.ExecuteReader();
-
-                    if (reader.Read())
-                    {
-                        heightMap = (byte[])reader["heightMap"];
-                        colorMap = (byte[])reader["colorMap"];
-                        sizeX = (int)reader["sizeX"];
-                        sizeY = (int)reader["sizeY"];
-                    }
-                }
-                map = new Map(heightMap.ToMatrix(sizeX, sizeY), colorMap.ToPixels(sizeX, sizeY).ToMatrix(sizeX, sizeY), sizeX, sizeY);
+                return command.ExecuteReader();
             }
             catch
             {
-                map = null;
-                return false;
+                //Stop server
+                return null;
             }
-            return true;
+        }
+
+        private static bool IsUserExists(long personId)
+        {
+            var users = new List<long>();
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                var queryString = $"SELECT idUser FROM Map";
+                SqlCommand command = new SqlCommand(queryString, connection);
+                connection.Open();
+                var reader = ExequteCommand(command);
+
+                while (reader.Read())
+                {
+                    users.Add((long)reader["@idUser"]);
+                }
+            }
+            return users.Contains(personId);
+        }
+
+        private static void AddUser(long personId)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                var queryString = $"INSERT INTO Map(idUser) VALUES (@idUser)";
+                SqlCommand command = new SqlCommand(queryString, connection);
+                connection.Open();
+                var param = new SqlParameter("@idUser", personId);
+                command.Parameters.Add(param);
+                ExequteCommand(command);
+            }
         }
     }
 }
