@@ -80,13 +80,20 @@ namespace HeighMapGeneratorBot
                 switch (msgArg.Message.Text)
                 {
                     case "Создать новую карту":
+
                         menu.Current = menu.Root.NextNodes.First();
                         menu.Current.PrintCurrentMessage(bot, msgArg);
                         break;
                     case "Вывести предыдущую созданную":
-                        var map = DataBaseReaderWriter.GetMap(msgArg.Message.Chat.Id);
-
                         var chatId = msgArg.Message.Chat.Id;
+                        DataBaseReaderWriter.TryGetMap(chatId, out Map map );
+                        if (map == null)
+                        {
+                            bot.SendMessage(chatId, "Возникла ошибка чтения данных из базы. " +
+                                "Возможно вы еще не создавали карту либо возникла ошибка доступа к серверу", EmptyMurkup);
+                            break;
+                        }
+                        
                         bot.SendPhoto(chatId, map.ToHeightImage());
                         bot.SendPhoto(chatId, map.ColorMap.ToColorImage(map.SizeX, map.SizeY));
 
@@ -359,7 +366,12 @@ namespace HeighMapGeneratorBot
 
                     bot.SendPhoto(chatId, heightMap);
                     bot.SendPhoto(chatId, colorMap);
-                    DataBaseReaderWriter.AddMap(map, chatId);
+                    Thread.Sleep(2000);
+                    if(!DataBaseReaderWriter.TryAddMap(map, chatId))
+                    {
+                        bot.SendMessage(chatId, "Сервер временно недоступен, ваша карта не будет сохранена. " +
+                            "Позже вы сможете сгенерировать ее заново используя эти же параметры", EmptyMurkup);
+                    }
                     menu.Current = menu.Current.NextNodes.First();
                 }
                 menu.Current.PrintCurrentMessage(bot, msgArg);

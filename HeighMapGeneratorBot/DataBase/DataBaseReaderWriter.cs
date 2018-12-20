@@ -17,11 +17,11 @@ namespace HeighMapGeneratorBot
                 + "Integrated Security=true";
 
         /// <summary>
-        /// Добавление карты пользователю
+        /// Попытка добавления карты пользователю в базу данных
         /// </summary>
         /// <param name="map"></param>
         /// <param name="personId"></param>
-        public static void AddMap(Map map, long personId)
+        public static bool TryAddMap(Map map, long personId)
         {
             if (!IsUserExists(personId))
             {
@@ -50,17 +50,29 @@ namespace HeighMapGeneratorBot
                     sizeY.Value = map.SizeY;
                     idUser.Value = personId;
 
-                    ExequteCommand(command);
+                    if (ExequteCommand(command) == null)
+                    {
+                        return false;
+                    }
                 }
             }
+            return true;
         }
 
-
-        public static Map GetMap(long personId)
+        /// <summary>
+        /// Попытка получения карты из базы данных
+        /// </summary>
+        /// <param name="personId"></param>
+        /// <param name="map"></param>
+        /// <returns></returns>
+        public static bool TryGetMap(long personId, out Map map)
         {
-            if (!IsUserExists(personId))
-                return null;
 
+            if (!IsUserExists(personId))
+            {
+                map = null;
+                return false;
+            }
 
             byte[] heightMap = null;
             byte[] colorMap = null;
@@ -78,7 +90,8 @@ namespace HeighMapGeneratorBot
 
                 if (reader == null)
                 {
-                    return null;
+                    map = null;
+                    return false;
                 }
 
                 if (reader.Read())
@@ -89,7 +102,8 @@ namespace HeighMapGeneratorBot
                     sizeY = (int)reader["sizeY"];
                 }
             }
-            return new Map(heightMap.ToMatrix(sizeX, sizeY), colorMap.ToPixels(sizeX, sizeY).ToMatrix(sizeX, sizeY), sizeX, sizeY);
+            map = new Map(heightMap.ToMatrix(sizeX, sizeY), colorMap.ToPixels(sizeX, sizeY).ToMatrix(sizeX, sizeY), sizeX, sizeY);
+            return true;
         }
 
         private static SqlDataReader ExequteCommand(SqlCommand command)
@@ -100,14 +114,13 @@ namespace HeighMapGeneratorBot
             }
             catch
             {
-                //Stop server
                 return null;
             }
         }
 
         private static bool IsUserExists(long personId)
         {
-            var users = new List<long>();
+            var users = new List<string>();
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 var queryString = $"SELECT idUser FROM Map";
@@ -117,10 +130,10 @@ namespace HeighMapGeneratorBot
 
                 while (reader.Read())
                 {
-                    users.Add((long)reader["@idUser"]);
+                    users.Add(reader.GetValue(0).ToString());
                 }
             }
-            return users.Contains(personId);
+            return users.Contains(personId.ToString());
         }
 
         private static void AddUser(long personId)
