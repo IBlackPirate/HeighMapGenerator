@@ -14,6 +14,7 @@ namespace HeighMapGeneratorBot
     {
         private MenuTree menu;
         private TgBot bot;
+        private MapCreator mapCreator;
 
         public static ReplyMarkupBase EmptyMurkup => new ReplyKeyboardRemove();
         public static ReplyKeyboardMarkup YesNoMarkup
@@ -118,7 +119,7 @@ namespace HeighMapGeneratorBot
                 int size;
                 if (TryGetSquareMapSize(out size, msgArg))
                 {
-                    MapCreator.MapSizeX = MapCreator.MapSizeY = size;
+                    mapCreator.MapSizeX = mapCreator.MapSizeY = size;
                     menu.Current = menu.Current.NextNodes.First();
                 }
                 menu.Current.PrintCurrentMessage(bot, msgArg);
@@ -145,11 +146,11 @@ namespace HeighMapGeneratorBot
                 switch (msgArg.Message.Text)
                 {
                     case "Лес":
-                        MapCreator.Biome = BiomeType.Лес;
+                        mapCreator.Biome = BiomeType.Лес;
                         menu.Current = menu.Current.NextNodes.First();
                         break;
                     case "Пустыня":
-                        MapCreator.Biome = BiomeType.Пустыня;
+                        mapCreator.Biome = BiomeType.Пустыня;
                         menu.Current = menu.Current.NextNodes.First();
                         break;
                 }
@@ -197,7 +198,7 @@ namespace HeighMapGeneratorBot
                 int smoothness;
                 if (int.TryParse(msgArg.Message.Text, out smoothness))
                 {
-                    MapCreator.Smoothness = Math.Abs(smoothness % 5);
+                    mapCreator.Smoothness = Math.Abs(smoothness % 5);
                     menu.Current = menu.Current.NextNodes.First();
                 }
                 menu.Current.PrintCurrentMessage(bot, msgArg);
@@ -214,11 +215,11 @@ namespace HeighMapGeneratorBot
                 switch (msgArg.Message.Text)
                 {
                     case "Ввести константу":
-                        MapCreator.IsRandomBorder = false;
+                        mapCreator.IsRandomBorder = false;
                         menu.Current = menu.Current.NextNodes[1];
                         break;
                     case "Рандомно":
-                        MapCreator.IsRandomBorder = true;
+                        mapCreator.IsRandomBorder = true;
                         menu.Current = menu.Current.NextNodes[0];
                         break;
                 }
@@ -246,7 +247,7 @@ namespace HeighMapGeneratorBot
                 byte borderValue;
                 if (byte.TryParse(msgArg.Message.Text, out borderValue))
                 {
-                    MapCreator.DefaultBorderValue = borderValue;
+                    mapCreator.DefaultBorderValue = borderValue;
                     menu.Current = menu.Current.NextNodes.First();
                 }
                 menu.Current.PrintCurrentMessage(bot, msgArg);
@@ -282,7 +283,7 @@ namespace HeighMapGeneratorBot
                 byte angleValue;
                 if (byte.TryParse(msgArg.Message.Text, out angleValue))
                 {
-                    MapCreator.LeftTop = angleValue;
+                    mapCreator.LeftTop = angleValue;
                     menu.Current = menu.Current.NextNodes.First();
                 }
                 menu.Current.PrintCurrentMessage(bot, msgArg);
@@ -298,7 +299,7 @@ namespace HeighMapGeneratorBot
                 byte angleValue;
                 if (byte.TryParse(msgArg.Message.Text, out angleValue))
                 {
-                    MapCreator.LeftBottom = angleValue;
+                    mapCreator.LeftBottom = angleValue;
                     menu.Current = menu.Current.NextNodes.First();
                 }
                 menu.Current.PrintCurrentMessage(bot, msgArg);
@@ -315,7 +316,7 @@ namespace HeighMapGeneratorBot
                 byte angleValue;
                 if (byte.TryParse(msgArg.Message.Text, out angleValue))
                 {
-                    MapCreator.RightTop = angleValue;
+                    mapCreator.RightTop = angleValue;
                     menu.Current = menu.Current.NextNodes.First();
                 }
                 menu.Current.PrintCurrentMessage(bot, msgArg);
@@ -331,7 +332,7 @@ namespace HeighMapGeneratorBot
                 byte angleValue;
                 if (byte.TryParse(msgArg.Message.Text, out angleValue))
                 {
-                    MapCreator.RightBottom = angleValue;
+                    mapCreator.RightBottom = angleValue;
                     menu.Current = menu.Current.NextNodes.First();
                 }
                 menu.Current.PrintCurrentMessage(bot, msgArg);
@@ -350,10 +351,10 @@ namespace HeighMapGeneratorBot
                     var chatId = msgArg.Message.Chat.Id;
                     bot.SendMessage(chatId, "Начался процесс создания. Он может идти длительное время", EmptyMurkup);
 
-                    var generator = MapCreator.CreateGenerator();
+                    var generator = mapCreator.CreateGenerator();
                     var map = generator.GenerateMap();
                     var heightMap = map.ToHeightImage();
-                    var colorMap = map.GenerateColor(MapCreator.Biome, MapCreator.Smoothness);
+                    var colorMap = map.GenerateColor(mapCreator.Biome, mapCreator.Smoothness);
 
                     bot.SendPhoto(chatId, heightMap);
                     bot.SendPhoto(chatId, colorMap);
@@ -382,7 +383,7 @@ namespace HeighMapGeneratorBot
                 int seed;
                 if (int.TryParse(msgArg.Message.Text, out seed))
                 {
-                    MapCreator.Seed = seed;
+                    mapCreator.Seed = seed;
                     menu.Current = menu.Current.NextNodes.First();
                 }
                 menu.Current.PrintCurrentMessage(bot, msgArg);
@@ -400,7 +401,7 @@ namespace HeighMapGeneratorBot
                 float roughness;
                 if (float.TryParse(msgArg.Message.Text, out roughness))
                 {
-                    MapCreator.Roughness = roughness;
+                    mapCreator.Roughness = roughness;
                     menu.Current = menu.Current.NextNodes.First();
                 }
                 menu.Current.PrintCurrentMessage(bot, msgArg);
