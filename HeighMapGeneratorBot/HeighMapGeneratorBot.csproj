@@ -180,7 +180,7 @@
     <Compile Include="Bot\MenuTree.cs" />
     <Compile Include="Bot\MenuTreeMaker.cs" />
     <Compile Include="MapCreator.cs" />
-    <Compile Include="Pixel.cs" />
+    <Compile Include="ColorMap\Pixel.cs" />
     <Compile Include="Convertors\PixelConvertor.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

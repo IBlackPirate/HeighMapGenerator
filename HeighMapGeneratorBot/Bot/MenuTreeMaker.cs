@@ -40,6 +40,7 @@ namespace HeighMapGeneratorBot
         {
             bot = tgBot;
             menu = new MenuTree(GetRoot());
+            mapCreator = new MapCreator();
             InitializeNodes();
             return menu;
         }
@@ -408,6 +409,5 @@ namespace HeighMapGeneratorBot
             };
             return node;
         }
-
     }
 }
